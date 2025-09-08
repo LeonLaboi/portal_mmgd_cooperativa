@@ -1,0 +1,35 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="{% static 'styles/base.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/login.css' %}">
+    <title>Login</title>
+</head>
+<body>
+    <div class="wrapper">
+        <h1>Login</h1>
+        <form method="POST" action="{% url 'login' %}">
+            {% csrf_token %}
+            <div class="imput-box">
+                <input type="text" name="username" id="username" placeholder="E-mail do usuário">
+                <i class='bx bxs-user'></i>
+            </div>
+            <div class="imput-box">
+                <input type="password" name="password" id="password" placeholder="Senha" required>
+                <i class='bx bxs-lock' ></i>
+            </div>
+            <button type="submit">Entrar</button>
+        </form>
+        <div id="error-message">
+            {% if messages %}
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

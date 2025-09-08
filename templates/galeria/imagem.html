@@ -1,0 +1,52 @@
+{% extends 'galeria/base.html' %}
+{% load static %}
+{% block content %}
+    <div class="pagina-inicial">
+        <main class="principal">
+            <section class="menu-lateral">
+                <nav class="menu-lateral__navegacao">
+                    <a href="{% url 'alura' %}">
+                        <img src="{% static 'assets/ícones/1x/Home - ativo.png' %}"> Home
+                    </a>
+                </nav>
+            </section>
+            <section class="grafico">
+                <h2 class="cards__titulo">Gráfico de Consumo de Energia</h2>
+                <label for="client-selector" class="card">
+                    Selecione {{ selected_filter|capfirst }}:
+                </label>                
+                <select id="client-selector">
+                    {% for client in clientes %}
+                        {% if selected_filter == 'id_client' %}
+                            <option value="{{ client.id_client }}" {% if client.id_client == selected_id %}selected{% endif %}>
+                                {{ client.id_client }}
+                            </option>
+                        {% else %}
+                            <option value="{{ client.id_uc }}" {% if client.id_uc == selected_id %}selected{% endif %}>
+                                {{ client.id_uc }}
+                            </option>
+                        {% endif %}
+                    {% endfor %}
+                </select>                
+                <img id="energy-graph" src="data:image/png;base64,{{ graphic }}" alt="Gráfico de Consumo de Energia">
+            </section>
+        </main>
+    </div>
+
+    <script>
+        document.getElementById('client-selector').addEventListener('change', function() {
+            const selectedClientId = this.value;
+            // Atualiza a URL com o parâmetro para carregar o gráfico do cliente selecionado
+            const url = `?{{ selected_filter }}=${selectedClientId}`;
+            fetch(url)
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const newGraphic = doc.getElementById('energy-graph').src;
+                    document.getElementById('energy-graph').src = newGraphic;
+                })
+                .catch(error => console.error('Erro ao carregar gráfico:', error));
+        });
+    </script>
+{% endblock %}

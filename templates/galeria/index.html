@@ -1,0 +1,20 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gestão de Energia de Sistemas Fotovoltaicos</title>
+    <link rel="stylesheet" href="{% static 'styles/base.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/index.css' %}">
+</head>
+
+<body>
+    <div class="page-header">
+        <h1 id="tittle" class="head-child">Univesp</h1>
+        <div class="head-child">
+            <a href="{% url 'login' %}">Ir para LOGIN</a>
+        </div>
+    </div>
+    <div class="content">
+        <p id="front-message">Convidamos cooperativas a repensarem seus modos de geração de <span>energia</span>!</p>
+    </div>
+</body>

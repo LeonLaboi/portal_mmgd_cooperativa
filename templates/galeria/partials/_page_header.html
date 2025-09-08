@@ -1,0 +1,16 @@
+{% load static %}
+<div class="page-header">
+  <div id="page-title" class="head-child">
+    <p>{{ page_title }}</p>
+  </div>
+  {% if show_home_button %}
+  <div id="home-button" class="head-child">
+    <a href="/home">Voltar para página inicial</a>
+  </div>
+  {% endif %}
+  <div class="head-child" id="head-logo">
+    <h1 id="tittle">Univesp</h1>
+    <h1>+</h1>
+    <img id="logo" src="{% static 'assets/logo/logo_nobg.png' %}" alt="" />
+  </div>
+</div>

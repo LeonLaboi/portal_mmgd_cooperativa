@@ -1,0 +1,67 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: url('https://static.wixstatic.com/media/f98783_421f8b496bf44a31a146dd289460e2ae~mv2_d_4000_2000_s_2.jpg/v1/fill/w_1903,h_811,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/f98783_421f8b496bf44a31a146dd289460e2ae~mv2_d_4000_2000_s_2.jpg');
+    background-color: #474c53;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    backdrop-filter: blur(5px);
+    margin: 0px;
+}
+
+.wrapper {
+    width: 300px;
+    padding: 20px;
+    background-color: #fdfdfd;
+    border-radius: 10px;
+}
+
+.wrapper h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.wrapper .imput-box {
+    position: relative;
+    margin: 0px 0px 20px;
+}
+
+.imput-box input {
+    width: 100%;
+    padding: 10px 30px 10px 10px;
+    outline: none;
+    border: 1px solid #333;
+    border-radius: 5px;
+}
+
+.imput-box input::placeholder {
+    color: #333;
+}
+
+.imput-box i {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    
+    cursor: pointer;
+}
+
+.wrapper button {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0px;
+    border: none;
+    background-color: #333;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.wrapper #error-message {
+    color: red;
+    text-align: center;
+    /* margin: 10px 0px; */
+}

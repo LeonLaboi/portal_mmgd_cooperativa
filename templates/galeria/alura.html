@@ -1,0 +1,45 @@
+{% extends 'galeria/base.html' %}
+{% load static %}
+{% block content %}
+
+    <div class="pagina-inicial">
+
+        <main class="principal">
+            <section class="menu-lateral">
+                <nav class="menu-lateral__navegacao">
+                    <a href="#"><img src="{% static '/assets/ícones/1x/Home - ativo.png' %}"> Home</a>
+                </nav>
+            </section>
+            <section class="conteudo">
+                <section class="banner">
+                    <img class="banner__imagem" src="{% static '/assets/imagens/Banner(2).png' %}" alt="banner Alura Space">
+                    <h1 class="banner__titulo"> O portal de MMGD da Univesp!</h1>
+                </section>
+                <section class="galeria">
+                    <div class="cards">
+                        <h2 class="cards__titulo">Navegue pelos perfis</h2>
+                        <ul class="cards__lista">
+                            {% if cards %}
+                            {% for perfil in cards %}
+                            <li class="card">
+                                <a href="{% url 'imagem' perfil.id %}">
+                                    <img class="card__imagem" src="{% static '/assets/imagens/galeria/' %}{{ perfil.foto }}" alt="foto">
+                                </a>
+                                <div class="card__info">
+                                    <p class="card__titulo">{{ perfil.nome }}</p>
+                                    <div class="card__texto">
+                                        <p class="card__descricao">{{ perfil.legenda }}</p>
+                                    </div>
+                                </div>
+                            </li>
+                            {% endfor %}
+                            {% else %}
+                            {% endif %}
+                        </ul>
+                    </div>
+                </section>
+            </section>
+        </main>
+    </div>
+
+{% endblock %}
