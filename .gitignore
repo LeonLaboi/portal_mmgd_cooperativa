@@ -143,6 +143,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+portal_mmgd
 
 # Spyder project settings
 .spyderproject
