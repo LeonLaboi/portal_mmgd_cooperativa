@@ -8,7 +8,7 @@ class Cliente(models.Model):
     telefone = models.CharField(max_length=15)
     data_associacao = models.DateField(auto_now_add=True)
     unidade_geradora = models.CharField(max_length=20)  # Nº da UC do Gerador Solar peranta aa distribuidora
-    tipo = models.CharField(max_length=10, choices=[('gerador', 'Gerador'), ('consumidor', 'Consumidor'), ('misto', 'Misto')])
+    tipo = models.CharField(max_length=10, choices=[('gerador', 'Gerador'), ('consumidor', 'Consumidor'), ('prosumidor', 'Prosumidor')])
     legenda = models.CharField(max_length=200, blank=True)   # pode ser uma descrição do cliente a ser exibida
     data_atualizacao = models.DateTimeField(auto_now=True) 
     
