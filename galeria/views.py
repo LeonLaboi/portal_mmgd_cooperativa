@@ -10,7 +10,7 @@ from django.templatetags.static import static
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib import messages
 
-from galeria.models import Cliente as Perfil, Micro as LeituraCSV
+from galeria.models import Cliente as Perfil, BaseMicro as LeituraCSV
 
 
 def index(request):
@@ -42,13 +42,13 @@ def imagem(request, perfil_id):
     leituras = LeituraCSV.objects.filter(**{selected_filter: selected_id})
 
     mes_refs = [leitura.mes_ref.strftime("%m/%Y") for leitura in leituras]
-    qtd_enrg_te = [leitura.qtd_enrg_te for leitura in leituras]
+    consumo = [leitura.consumo_kwh for leitura in leituras]
 
     plt.figure(figsize=(15, 8))
-    plt.bar(mes_refs, qtd_enrg_te, color='skyblue')
-    plt.title(f'Quantidade de Energia por Mês para {selected_filter}={selected_id}')
+    plt.bar(mes_refs, consumo, color='skyblue')
+    plt.title(f'Consumo de Energia - {selected_filter}={selected_id}')
     plt.xlabel('Mês Referência')
-    plt.ylabel('Quantidade de Energia (kWh)')
+    plt.ylabel('Energia (kWh)')
     plt.xticks(rotation=45)
 
     buffer = io.BytesIO()

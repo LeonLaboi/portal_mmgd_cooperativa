@@ -6,19 +6,20 @@
 {% endblock %}
 
 {% block content %}
-    <section class="banner">
-        <img class="banner-img" src="{% static '/assets/imagens/Banner(2).png' %}" alt="banner">
-        <h1 class="banner-title"> O portal de MMGD da UNIVESP</h1>
-    </section>
-    <section class="galeria">
-        <div class="cards-container">
-            <h2 class="cards-title">Navegue pelas visões</h2>
-            <ul class="cards__lista">
-                {% if cards %}
+<section class="banner">
+    <img class="banner-img" src="{% static 'assets/imagens/Banner(2).png' %}" alt="banner">
+    <h1 class="banner-title">O portal de MMGD da UNIVESP</h1>
+</section>
+
+<section class="galeria">
+    <div class="cards-container">
+        <h2 class="cards-title">Navegue pelas visões</h2>
+        <ul class="cards__lista">
+            {% if cards %}
                 {% for perfil in cards %}
                 <li class="card">
                     <a href="{% url 'imagem' perfil.id %}">
-                        <img class="card__imagem" src="{% static '/assets/imagens/galeria/' %}{{ perfil.foto }}" alt="foto">
+                        <img class="card__imagem" src="{% static 'assets/imagens/galeria/' %}{{ perfil.foto }}" alt="{{ perfil.nome }}">
                     </a>
                     <div class="card__info">
                         <p class="card__titulo">{{ perfil.nome }}</p>
@@ -28,9 +29,10 @@
                     </div>
                 </li>
                 {% endfor %}
-                {% else %}
-                {% endif %}
-            </ul>
-        </div>
-    </section>
+            {% else %}
+                <p class="sem-cards">Nenhuma visão disponível no momento.</p>
+            {% endif %}
+        </ul>
+    </div>
+</section>
 {% endblock %}
