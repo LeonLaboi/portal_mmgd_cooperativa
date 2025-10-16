@@ -19,8 +19,14 @@
                 {% for perfil in cards %}
                 <li class="card">
                     <a href="{% url 'imagem' perfil.id %}">
-                        <img class="card__imagem" src="{% static 'assets/imagens/galeria/' %}{{ perfil.foto }}" alt="{{ perfil.nome }}">
-                    </a>
+                        {% if perfil.tipo|lower == 'prosumidor' or perfil.tipo|lower == 'consumidor' %}
+                            <img class="card__imagem" src="{% static 'assets/imagens/galeria/micro.jpg' %}" alt="{{ perfil.nome }}">
+                        {% elif perfil.tipo|lower == 'gerador' %}
+                            <img class="card__imagem" src="{% static 'assets/imagens/galeria/macro.jpg' %}" alt="{{ perfil.nome }}">
+                        {% else %}
+                            <img class="card__imagem" src="{% static 'assets/imagens/galeria/micro.jpg' %}" alt="{{ perfil.nome }}">
+                        {% endif %}
+                    </a>                    
                     <div class="card__info">
                         <p class="card__titulo">{{ perfil.nome }}</p>
                         <div class="card__texto">

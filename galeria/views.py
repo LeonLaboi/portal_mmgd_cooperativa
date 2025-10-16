@@ -10,7 +10,7 @@ from django.templatetags.static import static
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib import messages
 
-from galeria.models import Cliente as Perfil, BaseMicro as LeituraCSV
+from galeria.models import Cliente as Perfil, BaseMicro
 
 
 def index(request):
@@ -32,21 +32,21 @@ def imagem(request, perfil_id):
     perfil = get_object_or_404(Perfil, pk=perfil_id)
 
     if perfil.nome == 'Gestor de Energia':
-        clientes = LeituraCSV.objects.values('id_client').distinct()
+        clientes = BaseMicro.objects.values('id_client').distinct()
         selected_filter = 'id_client'
     else:
-        clientes = LeituraCSV.objects.values('id_uc').distinct()
+        clientes = BaseMicro.objects.values('id_uc').distinct()
         selected_filter = 'id_uc'
 
     selected_id = request.GET.get(selected_filter, clientes[0][selected_filter])
-    leituras = LeituraCSV.objects.filter(**{selected_filter: selected_id})
+    leituras = BaseMicro.objects.filter(**{selected_filter: selected_id})
 
     mes_refs = [leitura.mes_ref.strftime("%m/%Y") for leitura in leituras]
     consumo = [leitura.consumo_kwh for leitura in leituras]
 
-    plt.figure(figsize=(15, 8))
+    plt.figure(figsize=(14, 7.5))
     plt.bar(mes_refs, consumo, color='skyblue')
-    plt.title(f'Consumo de Energia - {selected_filter}={selected_id}')
+    # plt.title(f'Consumo de Energia - {selected_filter}={selected_id}')
     plt.xlabel('Mês Referência')
     plt.ylabel('Energia (kWh)')
     plt.xticks(rotation=45)
@@ -70,17 +70,17 @@ def imagem(request, perfil_id):
 
 def get_graph(request, client_id):
     # Obtém os dados do gráfico para o cliente específico
-    leituras = LeituraCSV.objects.filter(id_client=client_id).values('mes_ref', 'qtd_enrg_te')
+    # leituras = BaseMicro.objects.filter(id_client=client_id).values('mes_ref', 'qtd_enrg_te')
 
-    # Criação do gráfico
-    meses = [leitura['mes_ref'] for leitura in leituras]
-    consumos = [leitura['qtd_enrg_te'] for leitura in leituras]
+    # # Criação do gráfico
+    # meses = [leitura['mes_ref'] for leitura in leituras]
+    # consumos = [leitura['qtd_enrg_te'] for leitura in leituras]
 
-    plt.figure(figsize=(10, 5))
-    plt.bar(meses, consumos)
-    plt.xlabel('Meses')
-    plt.ylabel('Quantidade de Energia (kWh)')
-    plt.title(f'Consumo de Energia para Cliente ID {client_id}')
+    # plt.figure(figsize=(10, 5))
+    # plt.bar(meses, consumos)
+    # plt.xlabel('Meses')
+    # plt.ylabel('Quantidade de Energia (kWh)')
+    # plt.title(f'Consumo de Energia para Cliente ID {client_id}')
 
     # Salvar o gráfico em um buffer
     buf = io.BytesIO()
@@ -107,4 +107,15 @@ def login_view(request):
 
 def home(request):
     perfis = Perfil.objects.all()
-    return render(request, 'galeria/home.html', {'page_title': 'Projeto MMGD', 'cards': perfis, 'show_home_button': False})
+    # caminho relativo dentro de static/
+    default_images = {
+        'micro': 'assets/imagens/galeria/micro.png',
+        'macro': 'assets/imagens/galeria/macro.png',
+        'default': 'assets/imagens/galeria/micro.png',
+    }
+    return render(request, 'galeria/home.html', {
+        'page_title': 'Projeto MMGD',
+        'cards': perfis,
+        'show_home_button': False,
+        'default_images': default_images
+    })
