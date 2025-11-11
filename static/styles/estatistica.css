@@ -1,0 +1,84 @@
+/* ===== Estilo geral ===== */
+body {
+    background-color: #f9fafb;
+    color: #222; /* Cor do texto visível */
+}
+
+/* ===== Container principal ===== */
+.macro-section {
+    width: 90%;
+    margin: 40px auto;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+    padding: 30px 40px;
+}
+
+.macro-section h1 {
+    font-size: 2rem;
+    color: #1a1a1a;
+    margin-bottom: 5px;
+}
+
+.macro-section h2 {
+    color: #444;
+    margin-bottom: 15px;
+}
+
+.macro-section h3 {
+    margin-top: 25px;
+    color: #333;
+}
+
+/* ===== Tabela ===== */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 0.95rem;
+    color: #222;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 12px 15px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+th {
+    background-color: #f3f4f6;
+    font-weight: 600;
+    color: #333;
+}
+
+tr:nth-child(even) {
+    background-color: #f9fafb;
+}
+
+tr:hover {
+    background-color: #eef2ff;
+}
+
+code {
+    background-color: #e5e7eb;
+    color: #111;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+/* ===== Botão Voltar ===== */
+.btn {
+    display: inline-block;
+    margin-top: 25px;
+    padding: 10px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    background-color: #1f2937;
+    color: white;
+    transition: all 0.2s ease;
+}
+
+.btn:hover {
+    background-color: #374151;
+}

@@ -15,29 +15,19 @@
     <div class="cards-container">
         <h2 class="cards-title">Navegue pelas visões</h2>
         <ul class="cards__lista">
-            {% if cards %}
-                {% for perfil in cards %}
-                <li class="card">
-                    <a href="{% url 'imagem' perfil.id %}">
-                        {% if perfil.tipo|lower == 'prosumidor' or perfil.tipo|lower == 'consumidor' %}
-                            <img class="card__imagem" src="{% static 'assets/imagens/galeria/micro.jpg' %}" alt="{{ perfil.nome }}">
-                        {% elif perfil.tipo|lower == 'gerador' %}
-                            <img class="card__imagem" src="{% static 'assets/imagens/galeria/macro.jpg' %}" alt="{{ perfil.nome }}">
-                        {% else %}
-                            <img class="card__imagem" src="{% static 'assets/imagens/galeria/micro.jpg' %}" alt="{{ perfil.nome }}">
-                        {% endif %}
-                    </a>                    
-                    <div class="card__info">
-                        <p class="card__titulo">{{ perfil.nome }}</p>
-                        <div class="card__texto">
-                            <p class="card__descricao">{{ perfil.legenda }}</p>
-                        </div>
+            {% for card in cards %}
+            <li class="card">
+                <a href="{% url card.url card.id %}">
+                    <img class="card__imagem" src="{% static card.imagem %}" alt="{{ card.nome }}">
+                </a>
+                <div class="card__info">
+                    <p class="card__titulo">{{ card.nome }}</p>
+                    <div class="card__texto">
+                        <p class="card__descricao">{{ card.legenda }}</p>
                     </div>
-                </li>
-                {% endfor %}
-            {% else %}
-                <p class="sem-cards">Nenhuma visão disponível no momento.</p>
-            {% endif %}
+                </div>
+            </li>
+            {% endfor %}
         </ul>
     </div>
 </section>

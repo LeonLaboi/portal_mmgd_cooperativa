@@ -1,0 +1,43 @@
+{% extends 'galeria/base_page.html' %}
+{% load static %}
+
+{% block extra_head_content %}
+<link rel="stylesheet" href="{% static 'styles/estatistica.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="macro-section">
+  <h1>{{ perfil.nome }}</h1>
+  <h2>{{ relatorio.status }}</h2>
+  <p>Qualidade geral: {{ relatorio.qualidade_geral|floatformat:2 }}%</p>
+
+  <h3>Resumo</h3>
+  <ul>
+    <li>Colunas válidas: {{ relatorio.colunas_validas }}</li>
+    <li>Colunas totais: {{ relatorio.colunas_totais }}</li>
+  </ul>
+
+  <table>
+      <thead>
+          <tr>
+              <th>Coluna</th>
+              <th>Teste KS</th>
+              <th>Teste T</th>
+              <th>Diferença % Média</th>
+          </tr>
+      </thead>
+      <tbody>
+          {% for nome, info in relatorio.detalhes.items %}
+          <tr>
+              <td><code>{{ nome }}</code></td>
+              <td>{{ info.teste_ks.interpretacao|default:"-" }}</td>
+              <td>{{ info.teste_t.interpretacao|default:"-" }}</td>
+              <td>{{ info.descricao.diferenca_percentual_media|floatformat:2 }}%</td>
+          </tr>
+          {% endfor %}
+      </tbody>
+  </table>
+
+  <a href="{% url 'home' %}" class="btn">Voltar</a>
+</section>
+{% endblock %}
