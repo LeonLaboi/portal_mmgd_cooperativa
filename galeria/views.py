@@ -1,16 +1,19 @@
 import json
 import matplotlib.pyplot as plt
-import numpy as np
+import numpy as np, pandas as pd
 import io
 import base64
+from datetime import datetime, timedelta
 
-from django.shortcuts import render, get_object_or_404, redirect #get_list_or_404
-from django.http import JsonResponse #HttpResponse
-from django.templatetags.static import static
+from django.shortcuts import render, get_object_or_404, redirect
+from django.http import JsonResponse
+# from django.templatetags.static import static
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib import messages
+# from django.db.models import Avg, Sum, Count
 
-from galeria.models import Cliente as Perfil, BaseMicro
+from galeria.models import Cliente as Perfil, BaseMicro, Cliente
+from galeria.estatisticas import obter_metricas_validacao
 
 
 def index(request):
@@ -25,18 +28,50 @@ def index(request):
 
 def alura(request):
     perfis = Perfil.objects.all()
-    return render(request, 'galeria/alura.html', {'cards': perfis})
+    consumidores = Cliente.objects.filter(tipo__in=['consumidor', 'prosumidor'])
+    return render(request, 'galeria/alura.html', {'cards': consumidores}) #perfis})
+
+def login_view(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            auth_login(request, user)
+            return redirect('home')  # Redireciona para a página 'alura' em caso de sucesso
+        else:
+            messages.error(request, 'Credenciais inválidas')
+    return render(request, 'galeria/login.html')
+
+def home(request):
+    cards = [
+        {
+            'id': 1,
+            'nome': 'Visão Micro',
+            'legenda': 'Monitoramento histórico de Geração, Consumo e Compensação de Créditos.',
+            'imagem': 'assets/imagens/galeria/micro.jpg',
+            'url': 'imagem_micro',  # nome da rota Django
+        },
+        {
+            'id': 2,
+            'nome': 'Visão Macro',
+            'legenda': 'Análises Estastíticas e Performance de Projeção.',
+            'imagem': 'assets/imagens/galeria/macro.jpg',
+            'url': 'estatistica_descritiva',
+        },
+    ]
+
+    return render(request, 'galeria/home.html', {
+        'page_title': 'Projeto MMGD',
+        'cards': cards,
+        'show_home_button': False
+    })
 
 
-def imagem(request, perfil_id):
+def imagem_micro(request, perfil_id):
     perfil = get_object_or_404(Perfil, pk=perfil_id)
-
-    if perfil.nome == 'Gestor de Energia':
-        clientes = BaseMicro.objects.values('id_client').distinct()
-        selected_filter = 'id_client'
-    else:
-        clientes = BaseMicro.objects.values('id_uc').distinct()
-        selected_filter = 'id_uc'
+    clientes = BaseMicro.objects.values('id_uc').distinct()
+    selected_filter = 'id_uc'
 
     selected_id = request.GET.get(selected_filter, clientes[0][selected_filter])
     leituras = BaseMicro.objects.filter(**{selected_filter: selected_id})
@@ -46,7 +81,6 @@ def imagem(request, perfil_id):
 
     plt.figure(figsize=(14, 7.5))
     plt.bar(mes_refs, consumo, color='skyblue')
-    # plt.title(f'Consumo de Energia - {selected_filter}={selected_id}')
     plt.xlabel('Mês Referência')
     plt.ylabel('Energia (kWh)')
     plt.xticks(rotation=45)
@@ -58,14 +92,33 @@ def imagem(request, perfil_id):
     buffer.close()
 
     return render(request, 'galeria/graph.html', {
-        'page_title': 'Projeto MMGD',
-        'show_home_button': True,
+        'page_title': 'Visão Micro',
         'perfil': perfil,
         'graphic': graphic,
         'clientes': clientes,
         'selected_filter': selected_filter,
         'selected_id': selected_id,
+        'show_home_button': True,
     })
+
+
+
+def estatistica_descritiva(request, perfil_id):
+    
+    relatorio = obter_metricas_validacao()
+    perfil = {
+        'id': perfil_id,
+        'nome': 'Visão Macro',
+        'legenda': 'Análises estatísticas e desempenho da projeção.',
+    }
+
+    return render(request, 'galeria/estatistica.html', {
+        'page_title': 'Visão Macro',
+        'perfil': perfil,
+        'relatorio': relatorio,
+        'show_home_button': True,
+    })
+
 
 
 def get_graph(request, client_id):
@@ -91,31 +144,3 @@ def get_graph(request, client_id):
     # Codificar o gráfico em base64
     graphic = base64.b64encode(buf.read()).decode('utf-8')
     return JsonResponse({'graphic': graphic})
-
-
-def login_view(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            auth_login(request, user)
-            return redirect('home')  # Redireciona para a página 'alura' em caso de sucesso
-        else:
-            messages.error(request, 'Credenciais inválidas')
-    return render(request, 'galeria/login.html')
-
-def home(request):
-    perfis = Perfil.objects.all()
-    # caminho relativo dentro de static/
-    default_images = {
-        'micro': 'assets/imagens/galeria/micro.png',
-        'macro': 'assets/imagens/galeria/macro.png',
-        'default': 'assets/imagens/galeria/micro.png',
-    }
-    return render(request, 'galeria/home.html', {
-        'page_title': 'Projeto MMGD',
-        'cards': perfis,
-        'show_home_button': False,
-        'default_images': default_images
-    })
