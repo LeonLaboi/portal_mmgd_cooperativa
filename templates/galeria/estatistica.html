@@ -38,6 +38,81 @@
       </tbody>
   </table>
 
-  <a href="{% url 'home' %}" class="btn">Voltar</a>
+<a href="{% url 'home' %}" class="btn">Voltar</a>
+<button id="btn-boxplot" class="btn">Box-Plot</button>
+<button id="btn-regressao" class="btn">Análise de Projeção</button>
+
+<!-- Modal -->
+<div id="modal" class="modal">
+  <div class="modal-content">
+    <span id="close-modal" class="close">&times;</span>
+    <img id="modal-img" src="" alt="Gráfico" style="max-width:100%; border-radius:10px;">
+  </div>
+</div>
+
+<style>
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 10;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.8);
+  justify-content: center;
+  align-items: center;
+}
+.modal-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 15px;
+  max-width: 850px;
+  width: 90%;
+  text-align: center;
+}
+.close {
+  position: absolute;
+  top: 20px; right: 30px;
+  font-size: 28px;
+  font-weight: bold;
+  color: #fff;
+  cursor: pointer;
+}
+.btn {
+  margin: 10px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+.btn:hover {
+  background-color: #0056b3;
+}
+</style>
+
+<script>
+const modal = document.getElementById('modal');
+const modalImg = document.getElementById('modal-img');
+const closeModal = document.getElementById('close-modal');
+
+function openModal(endpoint) {
+  modal.style.display = 'flex';
+  modalImg.src = '';
+  fetch(endpoint)
+    .then(res => res.json())
+    .then(data => {
+      modalImg.src = "data:image/png;base64," + data.graphic;
+    })
+    .catch(() => modalImg.alt = 'Erro ao carregar gráfico');
+}
+
+document.getElementById('btn-boxplot').addEventListener('click', () => openModal("{% url 'boxplot_consumo' %}"));
+document.getElementById('btn-regressao').addEventListener('click', () => openModal("{% url 'regressao_consumo' %}"));
+closeModal.addEventListener('click', () => modal.style.display = 'none');
+window.addEventListener('click', e => { if (e.target === modal) modal.style.display = 'none'; });
+</script>
+
+
 </section>
 {% endblock %}

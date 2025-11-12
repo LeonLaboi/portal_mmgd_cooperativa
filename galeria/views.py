@@ -1,8 +1,7 @@
 import json
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt, seaborn as sns
 import numpy as np, pandas as pd
-import io
-import base64
+import io, base64
 from datetime import datetime, timedelta
 
 from django.shortcuts import render, get_object_or_404, redirect
@@ -15,6 +14,8 @@ from django.contrib import messages
 from galeria.models import Cliente as Perfil, BaseMicro, Cliente
 from galeria.estatisticas import obter_metricas_validacao
 
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import r2_score
 
 def index(request):
   
@@ -120,6 +121,71 @@ def estatistica_descritiva(request, perfil_id):
     })
 
 
+
+def boxplot_consumo(request):
+    # obtém todos os dados da tabela BaseMicro
+    dados = BaseMicro.objects.all().values('mes_ref', 'consumo_kwh')
+    df = pd.DataFrame(dados)
+
+    if df.empty:
+        return JsonResponse({'error': 'Sem dados disponíveis'}, status=400)
+
+    df['mes_ref'] = pd.to_datetime(df['mes_ref'], errors='coerce')
+    df = df.dropna(subset=['mes_ref', 'consumo_kwh'])
+
+    df['semestre'] = df['mes_ref'].dt.month.apply(lambda m: '1º Semestre' if m <= 6 else '2º Semestre')
+
+    plt.figure(figsize=(8, 5))
+    sns.boxplot(data=df, y='semestre', x='consumo_kwh', orient='h', width=0.5, palette='winter')
+    plt.title('Distribuição do Consumo de Energia por Semestre')
+    plt.xlabel('')
+    plt.ylabel('Consumo (kWh)')
+
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format='png', bbox_inches='tight')
+    buffer.seek(0)
+    graphic = base64.b64encode(buffer.getvalue()).decode()
+    buffer.close()
+
+    return JsonResponse({'graphic': graphic})
+
+
+def regressao_consumo(request):
+    dados = BaseMicro.objects.all().values('mes_ref', 'consumo_kwh')
+    df = pd.DataFrame(dados)
+    if df.empty or len(df) < 12:
+        return JsonResponse({'error': 'Dados insuficientes'}, status=400)
+
+    df['mes_ref'] = pd.to_datetime(df['mes_ref'], errors='coerce')
+    df = df.dropna(subset=['mes_ref', 'consumo_kwh'])
+    df = df.sort_values('mes_ref')
+
+    df_recent = df.iloc[-12:]
+    X = np.arange(len(df_recent)).reshape(-1, 1)
+    y = df_recent['consumo_kwh'].values
+
+    model = LinearRegression().fit(X, y)
+    y_pred = model.predict(X)
+    r2 = r2_score(y, y_pred)
+
+    plt.figure(figsize=(8, 4))
+    ax = sns.scatterplot(x=y_pred, y=y, color='steelblue')
+    sns.lineplot(x=y_pred, y=y_pred, color='crimson', lw=2, ax=ax)
+
+    plt.title('Previsão x Real', fontsize=16)
+    plt.xlabel('Consumo de Energia (kWh) - Previsão', fontsize=13)
+    plt.ylabel('Consumo de Energia (kWh) - Real', fontsize=13)
+
+    plt.text(min(y_pred)*1.01, max(y)*0.95, f'$R^2$ = {r2:.3f}',
+             fontsize=12, color='black',
+             bbox=dict(facecolor='white', edgecolor='gray', boxstyle='round,pad=0.3'))
+
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format='png', bbox_inches='tight')
+    buffer.seek(0)
+    graphic = base64.b64encode(buffer.getvalue()).decode()
+    buffer.close()
+    return JsonResponse({'graphic': graphic})
 
 def get_graph(request, client_id):
     # Obtém os dados do gráfico para o cliente específico
